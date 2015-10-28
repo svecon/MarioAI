@@ -75,7 +75,7 @@ public class Agent02_Jumpee extends MarioHijackAIBase implements IAgent {
 		MarioSimulator simulator = new MarioSimulator(options);
 		
 		// CREATE AGENT
-		IAgent agent = new Agent01_SprintForward();
+		IAgent agent = new Agent02_Jumpee();
 		
 		// RUN SIMULATOR w/ AGENT
 		simulator.run(agent);
