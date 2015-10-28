@@ -180,8 +180,8 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 //                && !gridCheck(1, -2, 2, 2, new SpikyCheck(Direction.Backward))
                 && !gridCheck(-2, -2, 2, 2, new BoombaCheck(Direction.Forward))
                 && !gridCheck(-2, -2, 2, 2, new SpikyCheck(Direction.Forward))
-                && !gridCheck(0, 0, 1, 0, new BoombaCheck(Direction.Any))
-                && !gridCheck(0, 0, 1, 0, new SpikyCheck(Direction.Any))
+                && !gridCheck(0, 0, 2, 0, new BoombaCheck(Direction.Any))
+                && !gridCheck(0, 0, 2, 0, new SpikyCheck(Direction.Any))
                 && !gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any))) {
 
             if (onEdge || gridCheck(0, 0, 2, 0, new GroundCheck())) {
@@ -243,6 +243,8 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 
         keepJumping &= !gridCheck(2, 0, 1, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
         keepJumping &= !gridCheck(2, 1, 1, 0, new BoombaCheck(Direction.Backward));
+        
+        keepJumping |= gridCheck(3, 2, 1, 1, new BoombaCheck(Direction.Forward)) && (t.brick(5, 2) || t.brick(6, 2));
 
         keepJumping |= gridCheck(1, 2, 2, 3, new SpikyCheck(Direction.Forward));
         keepJumping |= gridCheck(0, 3, 2, 0, new SpikyCheck(Direction.Forward));
@@ -275,7 +277,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 String options = FastOpts.FAST_VISx2_02_JUMPING
                         + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
                         + FastOpts.L_TUBES_ON
-                        + FastOpts.L_RANDOM_SEED(834567) //                    + FastOpts.L_RANDOMIZE
+                        + FastOpts.L_RANDOM_SEED(83442567) //                    + FastOpts.L_RANDOMIZE
                         ;
 
                 MarioSimulator simulator = new MarioSimulator(options);
