@@ -213,7 +213,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         wantToJump |= gridCheck(1, 1, 1, 0, new SpikyCheck(Direction.Backward)) && onEdge;
 
         wantToJump |= gridCheck(1, 0, 0, 0, new BoombaCheck(Direction.Any));
-        wantToJump |= gridCheck(4, 0, 0, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
+        wantToJump |= gridCheck(3, 0, 1, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
         wantToJump |= gridCheck(1, 0, 2, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
         wantToJump |= gridCheck(3, 1, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
         wantToJump |= gridCheck(3, 3, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
@@ -241,8 +241,8 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 
         keepJumping |= gridCheck(0, 0, 2, 1, new SpikyCheck(Direction.Forward));
 
-        keepJumping &= !gridCheck(0, 0, 3, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
-        keepJumping &= !gridCheck(0, 1, 3, 0, new BoombaCheck(Direction.Backward));
+        keepJumping &= !gridCheck(2, 0, 1, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
+        keepJumping &= !gridCheck(2, 1, 1, 0, new BoombaCheck(Direction.Backward));
 
         keepJumping |= gridCheck(1, 2, 2, 3, new SpikyCheck(Direction.Forward));
         keepJumping |= gridCheck(0, 3, 2, 0, new SpikyCheck(Direction.Forward));
@@ -275,7 +275,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 String options = FastOpts.FAST_VISx2_02_JUMPING
                         + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
                         + FastOpts.L_TUBES_ON
-                        + FastOpts.L_RANDOM_SEED(346) //                    + FastOpts.L_RANDOMIZE
+                        + FastOpts.L_RANDOM_SEED(834567) //                    + FastOpts.L_RANDOMIZE
                         ;
 
                 MarioSimulator simulator = new MarioSimulator(options);
