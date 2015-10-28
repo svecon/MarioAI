@@ -17,6 +17,7 @@ import ch.idsia.benchmark.mario.engine.input.MarioKey;
 import ch.idsia.benchmark.mario.environments.IEnvironment;
 import ch.idsia.benchmark.mario.options.FastOpts;
 import ch.idsia.tools.EvaluationInfo;
+import java.util.ArrayList;
 
 /**
  * Your custom agent! Feel free to fool around!
@@ -50,6 +51,14 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         Backward,
     };
 
+    class ObstacleCheck implements IChecker {
+
+        @Override
+        public boolean check(int x, int y) {
+            return !t.emptyTile(x, y);
+        }
+    }
+    
     class TileCheck implements IChecker {
 
         Tile tile;
@@ -151,13 +160,13 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 for (Entity entity : e.entities(i, j)) {
                     if (entity.speed.x < 0) {
                         if (gridCheck(1, j + 1, i - 1, 0, new EmptyGroundCheck())) {
-                            if (!gridCheck(1, j, i - 1, 0, new GroundCheck())) {
+                            if (!gridCheck(1, j, i - 1, 0, new ObstacleCheck())) {
                                 return true;
                             }
                         }
                     } else if (entity.speed.x > 0) {
                         if (gridCheck(i, j + 1, 9 - i, 0, new EmptyGroundCheck())) {
-                            if (!gridCheck(i, j, 9 - i, 0, new GroundCheck())) {
+                             if (!gridCheck(i, j, 9 - i, 0, new ObstacleCheck())) {
                                 return true;
                             }
                         }
@@ -178,14 +187,15 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         if (goingToFall()
                 //                && !gridCheck(1, -2, 2, 2, new BoombaCheck(Direction.Backward))
                 //                && !gridCheck(1, -2, 2, 2, new SpikyCheck(Direction.Backward))
-                && !gridCheck(-3, -2, 3, 2, new BoombaCheck(Direction.Forward))
-                && !gridCheck(-3, -2, 3, 2, new SpikyCheck(Direction.Forward))
-                && !gridCheck(0, -2, 2, 2, new BoombaCheck(Direction.Any))
-                && !gridCheck(0, -2, 2, 2, new SpikyCheck(Direction.Any))
-                && !gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any))) {
+                && !gridCheck(-3, -2, 3, 3, new BoombaCheck(Direction.Forward))
+                && !gridCheck(-3, -2, 3, 3, new SpikyCheck(Direction.Forward))
+                && (!gridCheck(0, -2, 2, 5, new BoombaCheck(Direction.Any)) || (t.emptyTile(1, 1) && t.brick(0, 1)))
+                && (!gridCheck(0, -2, 2, 5, new SpikyCheck(Direction.Any)) || (t.emptyTile(1, 1) && t.brick(0, 1)))
+                && (!gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any)) || (t.emptyTile(1, 1) && t.brick(0, 1)))) {
 
             if (onEdge || gridCheck(0, 0, 2, 0, new GroundCheck())) {
                 action.press(MarioKey.LEFT);
+                action.release(MarioKey.RIGHT);
             } else {
                 action.release(MarioKey.RIGHT);
             }
@@ -216,7 +226,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         wantToJump |= gridCheck(1, 0, 0, 0, new BoombaCheck(Direction.Any));
         wantToJump |= gridCheck(3, 0, 1, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
         wantToJump |= gridCheck(1, 0, 2, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
-        wantToJump |= gridCheck(3, 1, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
+        wantToJump |= gridCheck(1, 1, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
         wantToJump |= gridCheck(3, 3, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
 //        wantToJump |= gridCheck(1, 1, 1, 0, new BoombaCheck(Direction.Any)) && onEdge;
         wantToJump |= gridCheck(2, 2, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
@@ -249,7 +259,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 
         keepJumping |= gridCheck(1, 2, 2, 3, new SpikyCheck(Direction.Forward));
         keepJumping |= gridCheck(0, 3, 2, 0, new SpikyCheck(Direction.Forward));
-
+        
         keepJumping |= gridCheck(1, 3, 3, 3, new SpikyCheck(Direction.Any));
         keepJumping |= gridCheck(1, 0, 2, 2, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
 //        keepJumping |= gridCheck(2, 0, 1, 2, new SpikyCheck(Direction.Forward));
@@ -281,7 +291,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 String options = FastOpts.FAST_VISx2_02_JUMPING
                         + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
                         + FastOpts.L_TUBES_ON
-                        + FastOpts.L_RANDOM_SEED(83442567) //                    + FastOpts.L_RANDOMIZE
+                        + FastOpts.L_RANDOM_SEED(0) //                    + FastOpts.L_RANDOMIZE
                         ;
 
                 MarioSimulator simulator = new MarioSimulator(options);
@@ -293,6 +303,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         } else {
 
             int wins = 0;
+            ArrayList<Integer> losts = new ArrayList<Integer>();
             for (int i = 0; i < 1000; i++) {
                 String options = FastOpts.FAST_VISx2_02_JUMPING + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY) + FastOpts.L_TUBES_ON
                         + FastOpts.L_RANDOM_SEED(i)
@@ -302,10 +313,13 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 EvaluationInfo info = simulator.run(agent);
                 if (info.marioStatus == 1) {
                     wins++;
+                } else {
+                    losts.add(i);
                 }
             }
             System.out.println("WINS: ");
             System.out.println(wins);
+            System.out.println(losts);
         }
     }
 }
