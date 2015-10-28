@@ -261,7 +261,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         keepJumping |= gridCheck(0, 3, 2, 0, new SpikyCheck(Direction.Forward));
         
         keepJumping |= gridCheck(1, 3, 3, 3, new SpikyCheck(Direction.Any));
-        keepJumping |= gridCheck(1, 0, 2, 2, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
+        keepJumping |= gridCheck(1, 0, 2, 2, new SpikyCheck(Direction.Backward)) && !gridCheck(6, 1, 0, 1, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
 //        keepJumping |= gridCheck(2, 0, 1, 2, new SpikyCheck(Direction.Forward));
 
         keepJumping |= gridCheck(0, 4, 1, 1, new SpikyCheck(Direction.Any)) && (gridCheck(3, 4, 2, 1, new BoombaCheck(Direction.Forward))
@@ -291,7 +291,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
                 String options = FastOpts.FAST_VISx2_02_JUMPING
                         + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
                         + FastOpts.L_TUBES_ON
-                        + FastOpts.L_RANDOM_SEED(0) //                    + FastOpts.L_RANDOMIZE
+                        + FastOpts.L_RANDOM_SEED(5) //                    + FastOpts.L_RANDOMIZE
                         ;
 
                 MarioSimulator simulator = new MarioSimulator(options);
@@ -304,7 +304,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 
             int wins = 0;
             ArrayList<Integer> losts = new ArrayList<Integer>();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 100; i++) {
                 String options = FastOpts.FAST_VISx2_02_JUMPING + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY) + FastOpts.L_TUBES_ON
                         + FastOpts.L_RANDOM_SEED(i)
                         + FastOpts.VIS_OFF;
