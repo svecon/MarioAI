@@ -172,19 +172,18 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
     public MarioInput actionSelectionAI() {
         boolean onEdge = gridCheck(1, 1, 0, 0, new EmptyGroundCheck());
         boolean runRight = true;
-        
+
         action.release(MarioKey.LEFT);
 
         if (goingToFall()
-//                && !gridCheck(1, -2, 2, 2, new BoombaCheck(Direction.Backward))
-//                && !gridCheck(1, -2, 2, 2, new SpikyCheck(Direction.Backward))
+                //                && !gridCheck(1, -2, 2, 2, new BoombaCheck(Direction.Backward))
+                //                && !gridCheck(1, -2, 2, 2, new SpikyCheck(Direction.Backward))
                 && !gridCheck(-2, -2, 2, 2, new BoombaCheck(Direction.Forward))
                 && !gridCheck(-2, -2, 2, 2, new SpikyCheck(Direction.Forward))
-                && !(gridCheck(0, 0, 1, 0, new BoombaCheck(Direction.Backward)))
-                && !(gridCheck(0, 0, 1, 0, new SpikyCheck(Direction.Backward)))
-                && !(gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any)))
-                ) {
-            
+                && !gridCheck(0, 0, 1, 0, new BoombaCheck(Direction.Any))
+                && !gridCheck(0, 0, 1, 0, new SpikyCheck(Direction.Any))
+                && !gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any))) {
+
             if (onEdge || gridCheck(0, 0, 2, 0, new GroundCheck())) {
                 action.press(MarioKey.LEFT);
             } else {
@@ -202,30 +201,34 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 //        wantToJump |= gridCheck(1, 1, 4, 0, new EmptyGroundCheck()) && gridCheck(6, 1, 0, 0, new GroundCheck()); // long jump over a 5-hole
         wantToJump |= gridCheck(0, 0, 1, 0, new SpikyCheck(Direction.Forward));
         wantToJump |= gridCheck(0, 0, 1, 0, new SpikyCheck(Direction.Backward));
-        wantToJump |= gridCheck(4, 3, 0, 0, new SpikyCheck(Direction.Backward)) && onEdge;
+        wantToJump |= gridCheck(4, 3, 0, 0, new SpikyCheck(Direction.Backward)) && onEdge && !(t.brick(3, 3) || t.brick(2, 3));
         wantToJump |= gridCheck(0, 2, 3, 0, new SpikyCheck(Direction.Backward)) && onEdge;
         wantToJump |= gridCheck(3, 2, 0, 0, new SpikyCheck(Direction.Backward)) && onEdge;
         wantToJump |= gridCheck(1, 1, 1, 0, new SpikyCheck(Direction.Any)) && onEdge;
         wantToJump |= gridCheck(1, 2, 1, 0, new SpikyCheck(Direction.Any)) && onEdge;
-        wantToJump |= gridCheck(1, 2, 3, 0, new SpikyCheck(Direction.Backward)) && onEdge;
-        wantToJump |= gridCheck(1, 3, 3, 0, new SpikyCheck(Direction.Backward)) && onEdge;
+        wantToJump |= gridCheck(1, 2, 2, 0, new SpikyCheck(Direction.Backward)) && onEdge;
+        wantToJump |= gridCheck(1, 3, 3, 0, new SpikyCheck(Direction.Backward)) && onEdge && !(t.brick(3, 3) || t.brick(2, 3));
         wantToJump |= gridCheck(1, 3, 1, 0, new SpikyCheck(Direction.Forward)) && onEdge;
         wantToJump |= gridCheck(1, 3, 3, 0, new SpikyCheck(Direction.Forward)) && onEdge && (t.brick(4, 3) || t.brick(5, 3));
         wantToJump |= gridCheck(1, 1, 1, 0, new SpikyCheck(Direction.Backward)) && onEdge;
 
-        wantToJump |= gridCheck(1, 0, 0, 0, new BoombaCheck(Direction.Forward));
-        wantToJump |= gridCheck(4, 0, 0, 0, new BoombaCheck(Direction.Backward));
-        wantToJump |= gridCheck(1, 0, 2, 0, new BoombaCheck(Direction.Backward));
+        wantToJump |= gridCheck(1, 0, 0, 0, new BoombaCheck(Direction.Any));
+        wantToJump |= gridCheck(4, 0, 0, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
+        wantToJump |= gridCheck(1, 0, 2, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
         wantToJump |= gridCheck(3, 1, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
         wantToJump |= gridCheck(3, 3, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
 //        wantToJump |= gridCheck(1, 1, 1, 0, new BoombaCheck(Direction.Any)) && onEdge;
         wantToJump |= gridCheck(2, 2, 1, 0, new BoombaCheck(Direction.Backward)) && onEdge;
+
+        wantToJump |= gridCheck(-1, 0, 1, 0, new BoombaCheck(Direction.Forward));
+        wantToJump |= gridCheck(-1, 0, 1, 0, new SpikyCheck(Direction.Forward));
 
         wantToJump |= gridCheck(1, -1, 0, 1, new FlowerPotCheck()) && !gridCheck(1, -4, 0, 3, new FlowerCheck(Direction.Any)); // 2 tile flowerpot
         wantToJump |= gridCheck(1, -2, 0, 0, new FlowerPotCheck()) && !gridCheck(1, -5, 0, 3, new FlowerCheck(Direction.Any)); // 3 tile flowerpot
 
 //        wantToJump |= spikyInHole(1, 1, 3, 5) && !t.brick(1, 1);
         wantToJump &= mario.mayJump; // WARNING: do not press JUMP if UNABLE TO JUMP!
+        wantToJump &= mario.speed.x > 1 || !t.emptyTile(1, 0);
 
         action.set(MarioKey.JUMP, wantToJump);
 
@@ -233,7 +236,6 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 //        keepJumping |= spikyInHole(-1, -1, 3, 5);
 //        keepJumping |= spikyInHole(1, 1, 1, 5);
 //        keepJumping |= enemyAhead() || brickAhead(); // ENEMY || BRICK AHEAD => JUMP
-        
 
         keepJumping |= gridCheck(3, 1, 1, 0, new BoombaCheck(Direction.Backward)); // jump on goomba walking on the cliff 
 
@@ -242,18 +244,18 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         keepJumping &= !gridCheck(0, 0, 3, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
         keepJumping &= !gridCheck(0, 1, 3, 0, new BoombaCheck(Direction.Backward));
 
-        keepJumping |= gridCheck(1, 2, 2, 3, new SpikyCheck(Direction.Any));
+        keepJumping |= gridCheck(1, 2, 2, 3, new SpikyCheck(Direction.Forward));
         keepJumping |= gridCheck(0, 3, 2, 0, new SpikyCheck(Direction.Forward));
 
         keepJumping |= gridCheck(1, 3, 3, 3, new SpikyCheck(Direction.Any));
-        keepJumping |= gridCheck(1, 0, 4, 2, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
+        keepJumping |= gridCheck(1, 0, 2, 2, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
 //        keepJumping |= gridCheck(2, 0, 1, 2, new SpikyCheck(Direction.Forward));
 
 //        keepJumping |= gridCheck(3, 0, 2, 0, new GroundCheck());
         keepJumping |= gridCheck(0, 2, 1, 0, new SpikyCheck(Direction.Forward));
 
         keepJumping |= gridCheck(1, -1, 0, 1, new FlowerPotCheck());
-        
+
         keepJumping |= gridCheck(1, -2, 3, 3, new GroundCheck());
 
         keepJumping &= !mario.onGround;
@@ -262,56 +264,42 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
             action.press(MarioKey.JUMP);
         }
 
-//        shooting = !shooting;
-//        action.set(MarioKey.SPEED, !shooting);
-//        if (mario.mayShoot) {
-//            if (shooting) {
-//                shooting = false;
-//                action.release(MarioKey.SPEED);
-//            } else if (action.isPressed(MarioKey.SPEED)) {
-//                action.release(MarioKey.SPEED);
-//            } else {
-//                shooting = true;
-//                action.set(MarioKey.SPEED, !shooting);
-//            }
-//        } else {
-//            if (shooting) {
-//                shooting = false;
-//                action.release(MarioKey.SPEED);
-//            }
-//        }
         return action;
     }
 
     public static void main(String[] args) {
-        while (true) {
-            String options = FastOpts.FAST_VISx2_02_JUMPING
-                    + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
-                    + FastOpts.L_TUBES_ON
-                    + FastOpts.L_RANDOM_SEED(990) //                    + FastOpts.L_RANDOMIZE
-                    ;
+        boolean test = true;
 
-            MarioSimulator simulator = new MarioSimulator(options);
+        if (!test) {
+            while (true) {
+                String options = FastOpts.FAST_VISx2_02_JUMPING
+                        + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY)
+                        + FastOpts.L_TUBES_ON
+                        + FastOpts.L_RANDOM_SEED(346) //                    + FastOpts.L_RANDOMIZE
+                        ;
 
-            IAgent agent = new MyAgent();
+                MarioSimulator simulator = new MarioSimulator(options);
 
-            simulator.run(agent);
+                IAgent agent = new MyAgent();
+
+                simulator.run(agent);
+            }
+        } else {
+
+            int wins = 0;
+            for (int i = 0; i < 1000; i++) {
+                String options = FastOpts.FAST_VISx2_02_JUMPING + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY) + FastOpts.L_TUBES_ON
+                        + FastOpts.L_RANDOM_SEED(i)
+                        + FastOpts.VIS_OFF;
+                MarioSimulator simulator = new MarioSimulator(options);
+                IAgent agent = new MyAgent();
+                EvaluationInfo info = simulator.run(agent);
+                if (info.marioStatus == 1) {
+                    wins++;
+                }
+            }
+            System.out.println("WINS: ");
+            System.out.println(wins);
         }
-
-//        int wins = 0;
-//        for (int i = 0; i < 1000; i++) {
-//            String options = FastOpts.FAST_VISx2_02_JUMPING + FastOpts.L_ENEMY(Enemy.GOOMBA, Enemy.SPIKY) + FastOpts.L_TUBES_ON
-//                    + FastOpts.L_RANDOM_SEED(i)
-//                    + FastOpts.VIS_OFF
-//                    ;
-//            MarioSimulator simulator = new MarioSimulator(options);
-//            IAgent agent = new MyAgent();
-//            EvaluationInfo info = simulator.run(agent);
-//            if (info.marioStatus == 1) {
-//                wins++;
-//            }
-//        }
-//        System.out.println("WINS: ");
-//        System.out.println(wins);
     }
 }
