@@ -178,10 +178,10 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         if (goingToFall()
                 //                && !gridCheck(1, -2, 2, 2, new BoombaCheck(Direction.Backward))
                 //                && !gridCheck(1, -2, 2, 2, new SpikyCheck(Direction.Backward))
-                && !gridCheck(-2, -2, 2, 2, new BoombaCheck(Direction.Forward))
-                && !gridCheck(-2, -2, 2, 2, new SpikyCheck(Direction.Forward))
-                && !gridCheck(0, 0, 2, 0, new BoombaCheck(Direction.Any))
-                && !gridCheck(0, 0, 2, 0, new SpikyCheck(Direction.Any))
+                && !gridCheck(-3, -2, 3, 2, new BoombaCheck(Direction.Forward))
+                && !gridCheck(-3, -2, 3, 2, new SpikyCheck(Direction.Forward))
+                && !gridCheck(0, -2, 2, 2, new BoombaCheck(Direction.Any))
+                && !gridCheck(0, -2, 2, 2, new SpikyCheck(Direction.Any))
                 && !gridCheck(0, 1, 2, 1, new SpikyCheck(Direction.Any))) {
 
             if (onEdge || gridCheck(0, 0, 2, 0, new GroundCheck())) {
@@ -211,6 +211,7 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         wantToJump |= gridCheck(1, 3, 1, 0, new SpikyCheck(Direction.Forward)) && onEdge;
         wantToJump |= gridCheck(1, 3, 3, 0, new SpikyCheck(Direction.Forward)) && onEdge && (t.brick(4, 3) || t.brick(5, 3));
         wantToJump |= gridCheck(1, 1, 1, 0, new SpikyCheck(Direction.Backward)) && onEdge;
+//        wantToJump |= gridCheck(3, 2, 1, 0, new SpikyCheck(Direction.Backward)) && gridCheck(5, 2, 1, 0, new BoombaCheck(Direction.Forward));
 
         wantToJump |= gridCheck(1, 0, 0, 0, new BoombaCheck(Direction.Any));
         wantToJump |= gridCheck(3, 0, 1, 0, new BoombaCheck(Direction.Backward)) && !gridCheck(2, 0, 1, 0, new SpikyCheck(Direction.Forward));
@@ -241,8 +242,8 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
 
         keepJumping |= gridCheck(0, 0, 2, 1, new SpikyCheck(Direction.Forward));
 
-        keepJumping &= !gridCheck(2, 0, 1, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
-        keepJumping &= !gridCheck(2, 1, 1, 0, new BoombaCheck(Direction.Backward));
+//        keepJumping &= !gridCheck(2, 0, 1, 0, new BoombaCheck(Direction.Any)); // fall an goomba when he is on the same level
+        keepJumping &= !gridCheck(2, 0, 1, 0, new BoombaCheck(Direction.Backward));
         
         keepJumping |= gridCheck(3, 2, 1, 1, new BoombaCheck(Direction.Forward)) && (t.brick(5, 2) || t.brick(6, 2));
 
@@ -253,6 +254,9 @@ public class MyAgent extends MarioHijackAIBase implements IAgent {
         keepJumping |= gridCheck(1, 0, 2, 2, new SpikyCheck(Direction.Backward));// && mario.speed.x > 3;
 //        keepJumping |= gridCheck(2, 0, 1, 2, new SpikyCheck(Direction.Forward));
 
+        keepJumping |= gridCheck(0, 4, 1, 1, new SpikyCheck(Direction.Any)) && (gridCheck(3, 4, 2, 1, new BoombaCheck(Direction.Forward))
+                || gridCheck(3, 4, 2, 1, new SpikyCheck(Direction.Forward)));
+        
 //        keepJumping |= gridCheck(3, 0, 2, 0, new GroundCheck());
         keepJumping |= gridCheck(0, 2, 1, 0, new SpikyCheck(Direction.Forward));
 
